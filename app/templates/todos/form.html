@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% block title %}{{ 'Edit' if todo else 'New' }} ToDo{% endblock %}
+{% block content %}
+<h2>{{ 'Edit' if todo else 'New' }} ToDo</h2>
+<form method="post" action="">
+  <div class="mb-3">
+    <label class="form-label">Title</label>
+    <input type="text" name="title" class="form-control" value="{{ todo.title if todo }}" required>
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Description</label>
+    <textarea name="description" class="form-control">{{ todo.description if todo }}</textarea>
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Type</label>
+    <select name="type" class="form-select">
+      {% for t in ['epic','task','sub-task','bug'] %}
+      <option value="{{ t }}" {% if todo and todo.type==t %}selected{% endif %}>{{ t.title() }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Status</label>
+    <select name="status" class="form-select">
+      {% for s in ['new','in-progress','reject','done','under-review'] %}
+      <option value="{{ s }}" {% if todo and todo.status==s %}selected{% endif %}>{{ s.title() }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Assignee</label>
+    <input type="text" name="assignee" class="form-control" value="{{ todo.assignee if todo }}">
+  </div>
+  <button type="submit" class="btn btn-primary">{{ 'Update' if todo else 'Create' }}</button>
+</form>
+{% endblock %}

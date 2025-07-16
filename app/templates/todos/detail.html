@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% block title %}ToDo Detail{% endblock %}
+{% block content %}
+<h2>{{ todo.title }}</h2>
+<p><strong>ID:</strong> {{ todo.id }}</p>
+<p><strong>Status:</strong> {{ todo.status }}</p>
+<p><strong>Description:</strong> {{ todo.description }}</p>
+<p><strong>Assignee:</strong> {{ todo.assignee or '—' }}</p>
+<p><strong>Comments:</strong></p>
+<ul class="list-group">
+  {% for c in todo.comments %}
+  <li class="list-group-item">
+    <strong>{{ c.commenter }}</strong> at {{ c.timestamp }}<br>
+    {{ c.content }}
+  </li>
+  {% endfor %}
+</ul>
+<a href="/todos/{{ todo.id }}/edit" class="btn btn-warning mt-3">Edit</a>
+{% endblock %}

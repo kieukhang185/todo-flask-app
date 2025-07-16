@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% block title %}ToDo List{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between mb-3">
+  <h2>Your ToDos</h2>
+  <a href="/todos/new" class="btn btn-success">New ToDo</a>
+</div>
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th>ID</th><th>Title</th><th>Status</th><th>Assignee</th><th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for todo in todos %}
+    <tr>
+      <td>{{ todo.id }}</td>
+      <td>{{ todo.title }}</td>
+      <td>{{ todo.status }}</td>
+      <td>{{ todo.assignee or '—' }}</td>
+      <td>
+        <a href="/todos/{{ todo.id }}" class="btn btn-sm btn-info">View</a>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

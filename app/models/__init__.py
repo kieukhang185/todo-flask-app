@@ -1,0 +1,1 @@
+from .user import create_default_admin
