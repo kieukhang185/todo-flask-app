@@ -94,5 +94,3 @@ class UserRole(Resource):
         mongo.db.users.update_one({'username': username}, {'$set': {'role': data.get('role')}})
         return {'message': 'Role updated'}, 200
 
-# Register namespace
-api.add_namespace(user_ns, path='/users')

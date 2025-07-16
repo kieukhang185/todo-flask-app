@@ -28,6 +28,3 @@ class Logout(Resource):
     def post(self):
         # For JWT, client should discard token
         return {'message': 'Logout successful'}, 200
-
-# Register namespace with API
-api.add_namespace(auth_ns, path='/auth')

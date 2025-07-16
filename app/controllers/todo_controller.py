@@ -25,15 +25,25 @@ todo_model = todo_ns.model('Todo', {
 
 add_comment = todo_ns.model('AddComment', { 'content': fields.String(required=True) })
 
+#TODO
+# parser = reqparse.RequestParser()
+# parser.add_argument('page', type=int, default=1)
+# parser.add_argument('per_page', type=int, default=20)
+
 @todo_ns.route('/')
 class TodoList(Resource):
     @jwt_required()
     def get(self):
         filters = {k: v for k, v in request.args.items() if k in ['status','label','reporter','assignee','type','epic_id']}
-        todos = list(mongo.db.todos.find(filters))
+        out = []
+        todos = list(mongo.db.todos.find())
         for t in todos:
             t['_id'] = str(t['_id'])
-        return todos, 200
+            if 'created_at' in t:
+                t['created_at'] = t['created_at'].isoformat() + 'Z'
+                t['updated_at'] = t['updated_at'].isoformat() + 'Z'
+            out.append(t)
+        return out, 200
 
     @todo_ns.expect(todo_model)
     @jwt_required()
@@ -104,6 +114,3 @@ class TodoComment(Resource):
         }
         mongo.db.todos.update_one({'id': todo_id}, {'$push': {'comments': comment}})
         return {'message':'Comment added'},201
-
-# Register namespace
-api.add_namespace(todo_ns, path='/todos')

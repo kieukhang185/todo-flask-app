@@ -3,7 +3,7 @@
 from flask import Flask, request, redirect, url_for
 from flask_jwt_extended import (
     verify_jwt_in_request, jwt_required,
-    JWTManager
+    JWTManager, get_jwt_identity
 )
 from .config import Config
 from .extensions import mongo, jwt, bcrypt, api
@@ -11,6 +11,12 @@ from .models import create_default_admin
 from .controllers import auth_ns, user_ns, todo_ns
 from .views import views
 
+# class CustomJSONEncoder(JSONEncoder):
+#     def default(self, obj):
+#         if isinstance(obj, datetime):
+#             # e.g. "2025-07-16T15:02:51Z"
+#             return obj.isoformat() + 'Z'
+#         return super().default(obj)
 
 def create_app():
     app = Flask(__name__)
@@ -30,15 +36,21 @@ def create_app():
     # Callback for missing or invalid JWT in cookie/header
     @jwt.unauthorized_loader
     def missing_token_callback(error_string):
+        if request.path.startswith('/api/'):
+            return {'msg': error_string}, 401
         return redirect(url_for('views.login'))
 
     @jwt.invalid_token_loader
     def invalid_token_callback(error_string):
+        if request.path.startswith('/api/'):
+            return {'msg': error_string}, 401
         return redirect(url_for('views.login'))
 
     # Callback for expired token
     @jwt.expired_token_loader
     def expired_token_callback(jwt_header, jwt_payload):
+        if request.path.startswith('/api/'):
+            return {'msg': 'Token has expired'}, 401
         return redirect(url_for('views.login'))
 
     # Protect all /api/* except /api/auth/* and swagger JSON
@@ -52,6 +64,16 @@ def create_app():
             and not path.endswith('swagger.json')
         ):
             verify_jwt_in_request(locations=('cookies','headers'))
+
+    @app.context_processor
+    def inject_current_user():
+        try:
+            # if there's a valid JWT cookie/header, this will succeed
+            verify_jwt_in_request(locations=('cookies','headers'))
+            user = get_jwt_identity()
+        except:
+            user = None
+        return dict(current_user=user)
 
     # Serve Swagger UI at /api behind JWT
     @app.route('/api', strict_slashes=False)

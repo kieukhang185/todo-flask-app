@@ -25,12 +25,14 @@ def login():
             resp = make_response(redirect(url_for('views.list_todos')))
             # This actually plants the cookie the @jwt_required decorator will read:
             set_access_cookies(resp, token)
+            session['username'] = uname
             return resp
         flash('Invalid credentials')
     return render_template('login.html')
 
 @views.route('/logout')
 def logout():
+    session.clear()
     resp = make_response(redirect(url_for('views.login')))
     unset_jwt_cookies(resp)
     return resp
