@@ -16,7 +16,7 @@ comment_model = todo_ns.model('Comment', {
 todo_model = todo_ns.model('Todo', {
     'title': fields.String(required=True),
     'description': fields.String,
-    'status': fields.String(enum=['new','in-progress','reject','done','under-review'], default='new'),
+    'status': fields.String(default='new'),
     'label': fields.String,
     'assignee': fields.String,
     'type': fields.String(enum=['task','sub-task','epic','bug'], required=True),
@@ -34,7 +34,6 @@ add_comment = todo_ns.model('AddComment', { 'content': fields.String(required=Tr
 class TodoList(Resource):
     @jwt_required()
     def get(self):
-        filters = {k: v for k, v in request.args.items() if k in ['status','label','reporter','assignee','type','epic_id']}
         out = []
         todos = list(mongo.db.todos.find())
         for t in todos:
