@@ -3,7 +3,7 @@ services:
   web:
     build: .
     ports:
-      - "5000:5000"
+      - "80:5000"
     environment:
       - SECRET_KEY=${SECRET_KEY}
       - MONGO_URI=${MONGO_URI}

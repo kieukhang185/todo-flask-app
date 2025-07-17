@@ -1,5 +1,7 @@
 #!/bin/bash
 
+export WORKSPACE=$(find $HOME -name "todo-flask-app")
+
 change_docker_permission(){
     sudo chmod 666 /var/run/docker.sock
     ls -l /var/run/docker.sock
@@ -33,13 +35,20 @@ install_depen_all(){
         echo "This is not support for $sys, Please waite!"
         return
     fi
-    
+
 }
 
-start(){
-    cp env > .env
-    docker compose up --build
+setup(){
+    # cp .env.example > .env
+    export SECRET_KEY=""
+    JWT_SECRET_KEY=""
+    SECRET_KEY=$(python3 -c "import secrets; print(secrets.token_hex(32))")
+    JWT_SECRET_KEY=$(python3 -c "import secrets; print(secrets.token_hex(32))")
+    printf "SECRET_KEY=$SECRET_KEY\n" > ${WORKSPACE}/.env
+    printf "JWT_SECRET_KEY=$JWT_SECRET_KEY\n" >> ${WORKSPACE}/.env
+    cat ${WORKSPACE}/.env.example >> ${WORKSPACE}/.env
 }
+
 
 ## docker compose build --no-cache web
 ## docker compose --env-file .env up

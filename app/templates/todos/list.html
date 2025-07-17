@@ -16,10 +16,18 @@
     <tr>
       <td>{{ todo.id }}</td>
       <td>{{ todo.title }}</td>
+      <td>{{ todo.description }}</td>
       <td>{{ todo.status }}</td>
       <td>{{ todo.assignee or '—' }}</td>
       <td>
         <a href="/todos/{{ todo.id }}" class="btn btn-sm btn-info">View</a>
+        <form method="post"
+            action="{{ url_for('views.assign_to_me', todo_id=todo.id) }}"
+            style="display:inline;">
+          <button type="submit" class="btn btn-sm btn-warning">
+            Assign to me
+          </button>
+        </form>
       </td>
     </tr>
     {% endfor %}
